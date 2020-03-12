@@ -1,0 +1,43 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public static class GameObjectEx
+{
+    public static void DrawCircle(this GameObject container, float radius, float lineWidth)
+    {
+        var segments = 360;
+        var line = container.GetComponent<LineRenderer>();
+        line.useWorldSpace = false;
+        line.startWidth = lineWidth;
+        line.endWidth = lineWidth;
+        line.positionCount = segments + 1;
+
+        var pointCount = segments + 1; // add extra point to make startpoint and endpoint the same to close the circle
+        var points = new Vector3[pointCount];
+
+        for (int i = 0; i < pointCount; i++)
+        {
+            var rad = Mathf.Deg2Rad * (i * 360f / segments);
+            points[i] = new Vector3( Mathf.Cos(rad) * radius , 0f,  Mathf.Sin(rad) * radius );
+        }
+
+        line.SetPositions(points);
+    }
+
+    public static void DrawLine(this GameObject container, Vector3 start, Vector3 end, float width)
+          {
+
+              //container.transform.position = start;
+              LineRenderer lr = container.GetComponent<LineRenderer>();
+              //lr.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
+              //lr.SetColors(color, color);
+              lr.useWorldSpace = false;
+              lr.startWidth = width;
+              lr.endWidth = width;
+              lr.SetPosition(0, start);
+              lr.SetPosition(1, end);
+
+          }
+
+}
