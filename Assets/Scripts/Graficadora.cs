@@ -63,7 +63,7 @@ public class Graficadora : MonoBehaviour
               transformedC = TransormarPorMultiplicacion( transformedC, T3);
               Complejo T4 = A/C;
               transformedC = TransormarPorSuma( transformedC, T4);
-              
+
               //transformedC = TransormarPorMultiplicacion( originalC, A);
               GenerarCirculo(transformedC, transformedCircle, cam2, transformedxCoord, transformedyCoord, textTransformedCoords);
    }
@@ -151,7 +151,7 @@ public class Graficadora : MonoBehaviour
 
 
 
-struct Circulo
+public struct Circulo
 {
     public float h,k,r;
     public Circulo(float h, float k, float r)
@@ -167,7 +167,7 @@ struct Circulo
    }
 }
 
-class Complejo
+public class Complejo
 {
     public float x, y;
     public Complejo(float x, float y)
