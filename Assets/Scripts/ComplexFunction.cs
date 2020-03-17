@@ -63,6 +63,27 @@ public static class ComplexFunction
 
           }
 
+          public static Complejo zPow(Complejo z, int p){
+                    if (p==0) {
+                              return new Complejo(1,0);
+                    }else{
+                              Complejo aux = z;
+                              for (int i=1; i<p; i++) {
+                                        aux*=z;
+                              }
+                              return aux;
+                    }
+          }
+
+          public static Complejo dzPow(Complejo z, int p, int n){
+                    float aux =1;
+                    for (int i=0; i<n; i++) {
+                              aux*=p-i;
+                    }
+                    Complejo mult = new Complejo(aux,0);
+                    return mult*zPow(z,p-n);
+          }
+
           public static int Factorial( int x ){
             if( x<0){
                       return -1;

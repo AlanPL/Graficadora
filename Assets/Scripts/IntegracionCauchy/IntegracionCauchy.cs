@@ -7,8 +7,8 @@ public class IntegracionCauchy : MonoBehaviour
 {
           float limits=4f;
           public GameObject originalCircle;
-          public GameObject pointPrefab;
-          GameObject point;
+          //public GameObject pointPrefab;
+          public GameObject point;
 
           public GameObject originalxCoord;
           public GameObject originalyCoord;
@@ -19,6 +19,9 @@ public class IntegracionCauchy : MonoBehaviour
 
           public GameObject xLabelsParent;
           public GameObject xLabelPrefab;
+
+          public GameObject yLabelsParent;
+          public GameObject yLabelPrefab;
 
           public Text output;
           public Text outputSimple;
@@ -39,6 +42,7 @@ public class IntegracionCauchy : MonoBehaviour
                cam1 = camera1.GetComponent<UnityEngine.Camera>();
                DrawAxis();
                DrawxLabels(10.0f);
+               DrawyLabels(10.0f);
     }
 
     void Update(){
@@ -61,20 +65,33 @@ public class IntegracionCauchy : MonoBehaviour
     }
     void DrawxLabels(float range){
               //15 elementos
-
                     for(int i = 0; i < xLabelsParent.transform.childCount; i++)
                     {
                               GameObject g = xLabelsParent.transform.GetChild(i).gameObject;
-
                               Destroy(g);
                     }
-
-
               for (int i=-370; i<400; i+=55) {
                         GameObject label = Instantiate(xLabelPrefab, new Vector3(i, 65, 0), Quaternion.identity) as GameObject;
                         label.transform.SetParent(xLabelsParent.transform, false);
                         label.GetComponent<Text>().text = "|\n "+(float)System.Math.Round(
                               Camera.main.ScreenToWorldPoint(label.transform.position).x, 2);
+              }
+
+   }
+    void DrawyLabels(float range){
+                    for(int i = 0; i < yLabelsParent.transform.childCount; i++)
+                    {
+                              GameObject g = yLabelsParent.transform.GetChild(i).gameObject;
+                              Destroy(g);
+                    }
+
+              for (int i=-150; i<300; i+=55) {
+                        if (i!=70) {
+                                  GameObject label = Instantiate(yLabelPrefab, new Vector3(36, i, 0), Quaternion.identity) as GameObject;
+                                  label.transform.SetParent(yLabelsParent.transform, false);
+                                  label.GetComponent<Text>().text = "— "+(float)System.Math.Round(
+                                  Camera.main.ScreenToWorldPoint(label.transform.position).y, 2);
+                        }
               }
 
    }
@@ -84,7 +101,7 @@ public class IntegracionCauchy : MonoBehaviour
              labelR.transform.SetParent(xLabelsParent.transform, false);
              labelR.GetComponent<Text>().text = " "+r+"\n|";
    }
-    public void Integrar(float Zx, float Zy, float r, int n, string function){
+    public void Integrar(float Zx, float Zy, float r, int n, int p, string function){
               limits=r;
               originalC = new Circulo(0,0,r);
               float mayor = Mathf.Abs(Zx) > Mathf.Abs(Zy)? Mathf.Abs(Zx): Mathf.Abs(Zy);
@@ -95,8 +112,9 @@ public class IntegracionCauchy : MonoBehaviour
 
               GenerarCirculo(originalC, originalCircle, cam1, originalxCoord, originalyCoord, textOriginalCoords);
 
-              Destroy(point);
-              point = Instantiate(pointPrefab, new Vector3(Zx, Zy, -0.15f), Quaternion.identity) as GameObject;
+              //Destroy(point);
+              //point = Instantiate(pointPrefab, new Vector3(Zx, Zy, -0.15f), Quaternion.identity) as GameObject;
+              point.transform.position = new Vector3(Zx, Zy, -0.15f);
              point.transform.localScale = new Vector3(1,1,1)*0.3f*limits;
 
              Complejo Z0  = new Complejo(Zx, Zy);
@@ -122,8 +140,9 @@ public class IntegracionCauchy : MonoBehaviour
                        Complejo multiplicando = new Complejo(0,0);
                        switch (function) {
                                  case "Z^n":
-                                        outTxt+="("+Z0.ToBinomialString()+")^n";
-                                        multiplicando = Z0 ;
+                                        outTxt+="("+Z0.ToBinomialString()+")^"+p;
+                                        multiplicando = ComplexFunction.dzPow(Z0, p,n-1);
+
                                  break;
                                  case "e^z":
                                         outTxt+="e^("+Z0.ToBinomialString()+")";
@@ -157,15 +176,16 @@ public class IntegracionCauchy : MonoBehaviour
                                  outputSimple.fontSize=20;
                                  outputSimple.text="= "+(multiplicando*dospi).ToBinomialString();
                        }else{
-
-                                 if (Z0.x==0 && Z0.y==0) {
+                                 outputSimple.fontSize=20;
+                                 outputSimple.text="= "+(multiplicando*dospi).ToBinomialString();
+                                 /*if (Z0.x==0 && Z0.y==0) {
                                           outputSimple.fontSize=20;
                                           outputSimple.text ="= 2πi * 0";
                                  }else{
                                            outputSimple.fontSize=15;
                                            outputSimple.text="= 2πi * "+System.Math.Round( Z0.radio, 2)+"^n ( cos(n*"+System.Math.Round( 180*(Z0.angulo/Mathf.PI), 2)+
                                            ") + sen(n*"+System.Math.Round( 180*(Z0.angulo/Mathf.PI), 2)+"))";
-                                 }
+                                 }*/
                        }
                        if (n>1){
                                  outTxt += ")^("+(n-1)+") deriv.";
@@ -185,6 +205,8 @@ public class IntegracionCauchy : MonoBehaviour
 
             ajustarEscala(limits*1.2f);
             DrawxLabels(circulo.r*1.95f);
+            DrawyLabels(circulo.r*1.95f);
+
             //DrawRLabel(circulo.r);
 
             //ajustarTxtScale(limits, textOriginalxLabels , textOriginalyLabels);

@@ -37,7 +37,7 @@ public class Complejo
               return "Z = "+x+" +("+y+")i  = "+radio+" < "+angulo ;
    }
     public string ToBinomialString(){
-              return ""+System.Math.Round(x, 2)+" +("+System.Math.Round(y, 2)+")i";
+              return ""+System.Math.Round(x, 2)+" "+verifySign(System.Math.Round(y, 2))+"i";
    }
     public string ToPolarString(){
               return " "+System.Math.Round(radio, 2)+" ∡ "+System.Math.Round( 180*(angulo/Mathf.PI), 2) ;
@@ -63,6 +63,18 @@ public class Complejo
                         return new Complejo(0, 0);
               }
 
+   }
+
+   string verifySign(string s){
+             if (s[0]=='-') {
+                       return " "+s;
+             }else{
+                       return " +"+s;
+             }
+   }
+
+   string verifySign(double s){
+             return verifySign(s+"");             
    }
 
 }

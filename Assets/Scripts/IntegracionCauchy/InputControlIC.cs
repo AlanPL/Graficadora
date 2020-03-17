@@ -46,34 +46,38 @@ public class InputControlIC : MonoBehaviour
                       OnRValueChanged();
                   });
                   inN.onValueChanged.AddListener(delegate {
-                            //onClick();
                            OnNValueChanged();
+                  });
+                  nOfFunc.onValueChanged.AddListener(delegate {
+                            OnPowValueChanged();
                   });
 
           }
 
           public void onClick(){
-
-                    func.text =  funcDropDownText.text;
+                    if (funcDropDownText.text != "Z^n") {
+                              func.text =  funcDropDownText.text;
+                    }
 
                     float xParsed, yParsed, rParsed;
                     int nParsed, nFuncParsed;
                     bool validX = float.TryParse(inZx.text, out xParsed);
                     bool validY = float.TryParse(inZy.text, out yParsed);
                     bool validR = float.TryParse(inR.text, out rParsed);
+
                     bool validN = int.TryParse(inN.text, out nParsed);
                     bool validNFunc = int.TryParse(nOfFunc.text, out nFuncParsed);
 
                     if (validX && validY && validR && validN && rParsed>0 && nParsed>0) {
                               if (funcDropDownText.text == "Z^n") {
                                         if (validNFunc && nFuncParsed>=0) {
-                                                  integracionCauchy.Integrar( xParsed, yParsed, rParsed, nParsed, funcDropDownText.text);
+                                                  integracionCauchy.Integrar( xParsed, yParsed, rParsed, nParsed, nFuncParsed, funcDropDownText.text);
                                         }else{
                                                   output.text = "Campos Inválidos";
                                                   outputSimple.text ="";
                                         }
                               }else{
-                                        integracionCauchy.Integrar( xParsed, yParsed, rParsed, nParsed, funcDropDownText.text);
+                                        integracionCauchy.Integrar( xParsed, yParsed, rParsed, nParsed, 0, funcDropDownText.text);
                               }
                     }else{
                               output.text = "Campos Inválidos";
@@ -95,7 +99,7 @@ public class InputControlIC : MonoBehaviour
           }
          void OnZValueChanged(){
                    if (inZx.text!="" && inZy.text!="") {
-                            Z0.text =  "(Z - ("+inZx.text+" + ("+inZy.text+") i )";
+                            Z0.text =  "(Z - ("+inZx.text+verifySign(inZy.text)+" i )";
                             //Z0.text =  "Z - ("+inZx.text+" + ("+ inZy.text+") i "+")";
                   }else if (inZx.text!="" && inZy.text==""){
                             Z0.text =  "(Z - ("+inZx.text+")";
@@ -107,6 +111,15 @@ public class InputControlIC : MonoBehaviour
                   Z0.text =  Z0.text+potencia;
                   onClick();
           }
+
+          string verifySign(string s){
+                    if (s[0]=='-') {
+                              return " "+s;
+                    }else{
+                              return " +"+s;
+                    }
+          }
+
          void OnNValueChanged(){
                    int nParsed;
                    bool validN = int.TryParse(inN.text, out nParsed);
@@ -123,6 +136,23 @@ public class InputControlIC : MonoBehaviour
                    }
                    OnZValueChanged();
           }
+
+         void OnPowValueChanged(){
+                   int pParsed;
+                   bool validP = int.TryParse(nOfFunc.text, out pParsed);
+                   if (validP) {
+                             if(pParsed<0){
+                                       nOfFunc.text ="";
+                                       func.text="Z^n";
+                             }else{
+                                       func.text = "Z^"+pParsed;
+                             }
+
+                   }else{
+                             func.text="Z^n";
+                   }
+                   onClick();
+          }
          void OnRValueChanged(){
                    float rParsed;
                    bool validR = float.TryParse(inR.text, out rParsed);
@@ -135,19 +165,13 @@ public class InputControlIC : MonoBehaviour
                    onClick();
           }
 
-          string verificarSigno(string s){
-                    float num;
-                    if (s=="-") {
-                              num = float.Parse( s ) ;
-                    }else{
-                              num=0f;
-                    }
-                    if(num>=0){
-                              return "+"+s;
-                    }else{
-                              return s;
-                    }
+          public void ChangeZValues(float Zx, float Zy){
 
-
+                    inZx.text = System.Math.Round(Zx, 2)+"";
+                    inZy.text = System.Math.Round(Zy, 2)+"";
           }
+          public void ChangeRValue(float r){
+                    inR.text = System.Math.Round(r, 2)+"";                    
+          }
+
 }
