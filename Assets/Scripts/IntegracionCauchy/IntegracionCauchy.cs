@@ -101,7 +101,7 @@ public class IntegracionCauchy : MonoBehaviour
              labelR.transform.SetParent(xLabelsParent.transform, false);
              labelR.GetComponent<Text>().text = " "+r+"\n|";
    }
-    public void Integrar(float Zx, float Zy, float r, int n, int p, string function){
+    public void Integrar(float Zx, float Zy, float r, int n, int p, float a, float b, string function){
               limits=r;
               originalC = new Circulo(0,0,r);
               float mayor = Mathf.Abs(Zx) > Mathf.Abs(Zy)? Mathf.Abs(Zx): Mathf.Abs(Zy);
@@ -120,10 +120,10 @@ public class IntegracionCauchy : MonoBehaviour
              Complejo Z0  = new Complejo(Zx, Zy);
              //Debug.Log( Z0.ToString() );
              zPolar.text = Z0.ToPolarString();
-             if (Z0.radio == r) {
+             if (Z0.radio == r && n!=0 ) {
                        output.text = "indeterminado";
                        outputSimple.text="";
-            }else if (Z0.radio > r) {
+            }else if (Z0.radio > r || n==0) {
                        output.text = "0";
                        outputSimple.text="";
              }else{
@@ -165,9 +165,10 @@ public class IntegracionCauchy : MonoBehaviour
                                         multiplicando = ComplexFunction.dSinh( Z0, n-1 );
                                  break;
                                  case "a+ib":
-                                        outTxt+="("+Z0.ToBinomialString()+")";
+                                        Complejo aib = new Complejo(a,b);
+                                        outTxt+="("+aib.ToBinomialString()+")";
                                         if (n<=1){
-                                                  multiplicando = Z0 ;
+                                                  multiplicando = aib ;
                                         }
                                  break;
 

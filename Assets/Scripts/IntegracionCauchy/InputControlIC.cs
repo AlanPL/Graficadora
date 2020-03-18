@@ -22,7 +22,11 @@ public class InputControlIC : MonoBehaviour
           public Text nOfFuncLbl;
           public InputField nOfFunc;
 
-          string potencia=" )^n";
+          public GameObject aibIn;
+          public InputField inA;
+          public InputField inB;
+
+          string potencia=" )^N";
 
           void Start()
           {
@@ -52,10 +56,17 @@ public class InputControlIC : MonoBehaviour
                             OnPowValueChanged();
                   });
 
+                  inA.onValueChanged.AddListener(delegate {
+                      OnAibValueChanged();
+                  });
+                  inB.onValueChanged.AddListener(delegate {
+                      OnAibValueChanged();
+                  });
+
           }
 
           public void onClick(){
-                    if (funcDropDownText.text != "Z^n") {
+                    if (funcDropDownText.text != "Z^n" && funcDropDownText.text != "a+ib") {
                               func.text =  funcDropDownText.text;
                     }
 
@@ -68,16 +79,26 @@ public class InputControlIC : MonoBehaviour
                     bool validN = int.TryParse(inN.text, out nParsed);
                     bool validNFunc = int.TryParse(nOfFunc.text, out nFuncParsed);
 
-                    if (validX && validY && validR && validN && rParsed>0 && nParsed>0) {
+                    if (validX && validY && validR && validN && rParsed>0 && nParsed>=0) {
                               if (funcDropDownText.text == "Z^n") {
                                         if (validNFunc && nFuncParsed>=0) {
-                                                  integracionCauchy.Integrar( xParsed, yParsed, rParsed, nParsed, nFuncParsed, funcDropDownText.text);
+                                                  integracionCauchy.Integrar( xParsed, yParsed, rParsed, nParsed, nFuncParsed, 0, 0, funcDropDownText.text);
+                                        }else{
+                                                  output.text = "Campos Inválidos";
+                                                  outputSimple.text ="";
+                                        }
+                              }else if (funcDropDownText.text == "a+ib") {
+                                        float aParsed, bParsed;
+                                        bool validA = float.TryParse(inA.text, out aParsed);
+                                        bool validB = float.TryParse(inB.text, out bParsed);
+                                        if (validA && validB) {
+                                                  integracionCauchy.Integrar( xParsed, yParsed, rParsed, nParsed, nFuncParsed, aParsed, bParsed, funcDropDownText.text);
                                         }else{
                                                   output.text = "Campos Inválidos";
                                                   outputSimple.text ="";
                                         }
                               }else{
-                                        integracionCauchy.Integrar( xParsed, yParsed, rParsed, nParsed, 0, funcDropDownText.text);
+                                        integracionCauchy.Integrar( xParsed, yParsed, rParsed, nParsed, 0, 0, 0, funcDropDownText.text);
                               }
                     }else{
                               output.text = "Campos Inválidos";
@@ -90,9 +111,15 @@ public class InputControlIC : MonoBehaviour
                    if (funcDropDownText.text == "Z^n") {
                              nOfFuncLbl.gameObject.SetActive(true);
                              nOfFunc.gameObject.SetActive(true);
+                             aibIn.gameObject.SetActive(false);
+                   }else if (funcDropDownText.text == "a+ib") {
+                             nOfFuncLbl.gameObject.SetActive(false);
+                             nOfFunc.gameObject.SetActive(false);
+                             aibIn.gameObject.SetActive(true);
                    }else{
                              nOfFuncLbl.gameObject.SetActive(false);
                              nOfFunc.gameObject.SetActive(false);
+                             aibIn.gameObject.SetActive(false);
                    }
                  func.text =  funcDropDownText.text;
                  onClick();
@@ -109,6 +136,20 @@ public class InputControlIC : MonoBehaviour
                             Z0.text =  "(Z - Z0";
                   }
                   Z0.text =  Z0.text+potencia;
+                  onClick();
+          }
+
+          void OnAibValueChanged(){
+                   if (inA.text!="" && inB.text!="") {
+                            func.text =  inA.text+verifySign(inB.text)+" i";
+                            //Z0.text =  "Z - ("+inZx.text+" + ("+ inZy.text+") i "+")";
+                  }else if (inA.text!="" && inB.text==""){
+                            func.text =  inA.text+"";
+                  }else if (inA.text=="" && inB.text!=""){
+                            func.text =  inB.text+" i ";
+                  }else if (inA.text=="" && inB.text==""){
+                            func.text =  "a+ib";
+                  }
                   onClick();
           }
 
@@ -171,7 +212,7 @@ public class InputControlIC : MonoBehaviour
                     inZy.text = System.Math.Round(Zy, 2)+"";
           }
           public void ChangeRValue(float r){
-                    inR.text = System.Math.Round(r, 2)+"";                    
+                    inR.text = System.Math.Round(r, 2)+"";
           }
 
 }
